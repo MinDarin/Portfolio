@@ -1,2 +1,1 @@
-# Portfolio
-포트폴리오
+# Portfolio.pdf를 확인해 주세요.

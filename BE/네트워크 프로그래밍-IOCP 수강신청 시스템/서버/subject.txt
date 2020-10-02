@@ -1,0 +1,67 @@
+   classtime t1, t2;
+   class_info c1;
+   strcpy(c1.name, "컴파일러");
+   strcpy(c1.classID, "COMP111111");
+   c1.grad = 3;
+   strcpy(c1.prof, "김상욱");
+   c1.max_acpt = 1;
+   c1.cur_req = 0;
+   t1.day = 1; t1.start = 0; t1.end = 2;
+   c1.time1 = t1;
+
+   class_info c2;
+   strcpy(c2.name, "컴퓨터그래픽스");
+   strcpy(c2.classID, "COMP222222");
+   c2.grad = 3;
+   strcpy(c1.prof, "장재석");
+   c2.max_acpt = 2;
+   c2.cur_req = 0;
+   t1.day = 1; t1.start = 3; t1.end = 4;
+   t2.day = 3; t2.start = 4; t2.end = 4;
+   c2.time1 = t1;
+   c2.time2 = t2;
+
+   class_info c3;
+   strcpy(c3.name, "네트워크프로그래밍");
+   strcpy(c3.classID, "ELEC111111");
+   c3.grad = 3;
+   strcpy(c3.prof, "서지훈");
+   c3.max_acpt = 2;
+   c3.cur_req = 0;
+   t1.day = 3; t1.start = 0; t1.end = 2;
+   c3.time1 = t1;
+
+   class_info c4;
+   strcpy(c4.name, "소프트웨어공학");
+   strcpy(c4.classID, "COMP333333");
+   c4.grad = 3;
+   strcpy(c4.prof, "최윤자");
+   c4.max_acpt = 2;
+   c4.cur_req = 0;
+   t1.day = 2; t1.start = 3; t1.end = 4;
+   t2.day = 4; t2.start = 4; t2.end = 5;
+   c4.time1 = t1;
+   c4.time2 = t2;
+
+   class_info c5;
+   strcpy(c5.name, "운영체제");
+   strcpy(c5.classID, "COMP444444");
+   c5.grad = 3;
+   strcpy(c5.prof, "탁병철");
+   c5.max_acpt = 2;
+   c5.cur_req = 0;
+   t1.day = 2; t1.start = 4; t1.end = 5;
+   t2.day = 4; t2.start = 3; t2.end = 4;
+   c5.time1 = t1;
+   c5.time2 = t2;
+   
+   fp = fopen("subject.bin", "wb");
+   if (fp == NULL) ErrorHandling("file not exist");
+
+   fwrite(&c1, sizeof(c1), 1, fp);
+   fwrite(&c2, sizeof(c2), 1, fp);
+   fwrite(&c3, sizeof(c3), 1, fp);
+   fwrite(&c4, sizeof(c4), 1, fp);
+   fwrite(&c5, sizeof(c5), 1, fp);
+
+   fclose(fp);

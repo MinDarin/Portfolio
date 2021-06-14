@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="com.mycom.happyhouse.dao.HouseDao">
+
+	<!-- 이게 house-list (우측 컴포넌트 리스트 뿌리는 거) -->
+	<select id="getInfo" parameterType="Map" resultType = "com.mycom.happyhouse.dto.HouseDto">
+	<![CDATA[
+		SELECT info.no as infoNo, maxAmount, minAmount, AptName, buildYear, jibun, lat, lng, code as dcode, house_img as img, address
+		FROM (Select houseinfo_no, MAX(dealAmount) as maxAmount, MIN(dealAmount) as minAmount from housedeal group by(houseinfo_no)) as amountTable
+		right join houseinfo as info
+        on info.no = amountTable.houseinfo_no
+		left join dong
+		on info.dong_code = dong.code
+	]]>
+	<if test = "!word.isEmpty()">
+		where ${key} like CONCAT('%',#{word},'%')
+	</if>
+    order by AptName
+	LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<!-- 이게 전체 카운트 (pagination용)-->
+	<select id="getTotal" parameterType="Map" resultType = "int">	
+	<![CDATA[
+		SELECT count(*)
+		FROM houseinfo as info
+		left join dong
+		on info.dong_code = dong.code
+	]]>
+	<if test = "!word.isEmpty()">
+		where ${key} like CONCAT('%',#{word},'%')
+	</if>
+	</select>
+
+	<!-- 이게 좌측 좌표 뿌리는 거 -->
+	<select id="getAll" parameterType="Map" resultType = "com.mycom.happyhouse.dto.HouseSimpleDto">
+	<![CDATA[
+		SELECT info.AptName, info.lat, info.lng, dong.address
+		FROM houseinfo as info
+		left join dong
+		on info.dong_code = dong.code
+	]]>
+	<if test = "!word.isEmpty()">
+		where ${key} like CONCAT(#{word},'%')
+	</if>
+	</select>
+
+	<select id="getDealInfo" parameterType="int" resultType = "com.mycom.happyhouse.dto.HouseDealDto">
+		select no, dealAmount, dealYear, dealMonth, dealDay, area, floor, type from housedeal where houseinfo_no = #{dealNo};
+	</select>
+</mapper>

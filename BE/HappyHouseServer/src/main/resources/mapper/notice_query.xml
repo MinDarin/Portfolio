@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.mycom.happyhouse.dao.NoticeDao">
+
+	<insert id="noticeInsert" parameterType="com.mycom.happyhouse.dto.NoticeDto" useGeneratedKeys="true" keyProperty="noticeNo">
+		INSERT INTO NOTICE ( USER_SEQ, TITLE, CONTENT, REG_DT, READ_COUNT )
+		            VALUES ( #{userSeq}, #{title}, #{content}, now(), 0 )
+	</insert>
+	
+	<insert id="noticeFileInsert" parameterType="com.mycom.happyhouse.dto.NoticeFileDto">
+		INSERT INTO NOTICE_FILE ( NOTICE_NO, FILE_NAME, FILE_SIZE, FILE_CONTENT_TYPE, FILE_URL )
+		            VALUES ( #{noticeNo}, #{fileName}, #{fileSize}, #{fileContentType}, #{fileUrl} )
+	</insert>
+	
+	<!-- reg_dt : LocalDateTime, check out NoticeDto setter  -->
+	<select id="noticeList" parameterType="map" resultType="com.mycom.happyhouse.dto.NoticeDto">
+		SELECT b.NOTICE_NO, b.USER_SEQ, u.USER_NAME, u.USER_PROFILE_IMAGE_URL,
+		  	   b.TITLE, b.CONTENT, b.REG_DT, b.READ_COUNT
+		  FROM NOTICE b, USER u
+		 WHERE b.USER_SEQ = u.USER_SEQ
+		 ORDER BY b.NOTICE_NO DESC
+		 LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<select id="noticeListTotalCount" resultType="int">
+		SELECT COUNT(*) FROM NOTICE
+	</select>
+	
+	<select id="noticeListSearchWord" parameterType="map" resultType="com.mycom.happyhouse.dto.NoticeDto">
+		SELECT b.NOTICE_NO, b.USER_SEQ, u.USER_NAME, u.USER_PROFILE_IMAGE_URL,
+		  	   b.TITLE, b.CONTENT, b.REG_DT, b.READ_COUNT
+		  FROM NOTICE b, USER u
+		  WHERE b.USER_SEQ = u.USER_SEQ
+		    AND b.TITLE LIKE CONCAT('%', #{searchWord} ,'%')
+		  ORDER BY b.NOTICE_NO DESC
+		  LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<select id="noticeListSearchWordTotalCount" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		  FROM NOTICE
+		 WHERE TITLE LIKE CONCAT('%', #{searchWord} ,'%')
+	</select>
+	
+	<update id="noticeUpdate" parameterType="com.mycom.happyhouse.dto.NoticeDto">
+		UPDATE NOTICE
+		   SET TITLE = #{title},
+		   CONTENT   = #{content}
+		 WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<delete id="noticeDelete" parameterType="int">
+		DELETE FROM NOTICE WHERE NOTICE_NO = #{noticeNo}
+	</delete>
+	
+	<delete id="noticeFileDelete" parameterType="int">
+		DELETE FROM NOTICE_FILE WHERE NOTICE_NO = #{noticeNo}
+	</delete>
+	
+	<select id="noticeFileUrlDeleteList" parameterType="int" resultType="string">
+		SELECT FILE_URL FROM NOTICE_FILE WHERE NOTICE_NO = #{noticeNo}
+	</select>
+
+	<select id="noticeDetail" parameterType="int" resultType="com.mycom.happyhouse.dto.NoticeDto">
+		SELECT b.NOTICE_NO, b.USER_SEQ, u.USER_NAME, u.USER_PROFILE_IMAGE_URL,
+			   b.TITLE, b.CONTENT, b.REG_DT, b.READ_COUNT
+		  FROM NOTICE b, USER u
+		 WHERE b.NOTICE_NO = #{noticeNo}
+		   AND b.USER_SEQ = u.USER_SEQ
+	</select>
+	
+	<select id="noticeDetailFileList" parameterType="int" resultType="com.mycom.happyhouse.dto.NoticeFileDto">
+		SELECT NOTICE_NO, NOTICE_FILE_ID, FILE_NAME, FILE_SIZE, FILE_CONTENT_TYPE, 
+		       FILE_URL, REG_DT
+		  FROM NOTICE_FILE
+		 WHERE NOTICE_NO = #{noticeNo}
+	</select>
+	
+	<!-- Dao use Dto -->
+	<select id="noticeUserReadCount" parameterType="map" resultType="int">
+		SELECT count(*) FROM notice_user_read WHERE notice_no = #{noticeNo} and user_seq = #{userSeq}
+	</select>
+	
+	<!-- Dao use @param -->
+	<insert id="noticeUserReadInsert" parameterType="map">
+		INSERT INTO notice_user_read ( notice_no, user_seq )
+		            VALUES ( #{noticeNo}, #{userSeq} )
+	</insert>
+	
+	<update id="noticeReadCountUpdate" parameterType="int">
+		UPDATE notice set READ_COUNT = READ_COUNT + 1
+		 WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<update id="noticeReadCountDelete" parameterType="int">
+		DELETE FROM notice_user_read WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	
+	
+
+</mapper>
+
+
+
+
+
+
